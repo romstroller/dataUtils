@@ -22,10 +22,8 @@ ops = OsOps.Ops()
 # kit = osOps.OsKit()
 
 def getKaggleSet( owner, dSetTitle, keyPath = None ):
-    """
-    Authenticate with Kaggle, download datasete and load to Pandas
-    Authentication looks for your Kaggle key file at the defined path
-    """
+    """ Authenticate with Kaggle, download datasete and load to Pandas
+    Authentication looks for your Kaggle key file at the defined path """
     
     def download(_keyPath = keyPath):
         if not _keyPath: _keyPath = f"{userDir}\\PYC\\_ADMIN\\kaggle.json"
@@ -47,11 +45,11 @@ def getKaggleSet( owner, dSetTitle, keyPath = None ):
         sortedFs = ops.datesortFiles( currWorkDir, dSetTitle )
         if len( sortedFs ) == 0:
             if not downloadStarted: downloadStarted = download()
-            else: print( f"- [{osOps.OsKit().dtStamp()}] Await Kaggle API request" )
+            else: print( f"- [{ops.dtStamp()}] Await Kaggle API request" )
             time.sleep( 1 )
         else:
             dataFname, dated = list( sortedFs.items() )[ 0 ]
-            print( f"- [{(st := osOps.OsKit().dtStamp())}] Got '{dataFname}'\n"
+            print( f"- [{(st := ops.dtStamp())}] Got '{dataFname}'\n"
                    f"{' ' * (len( st ) + 5)}{dated=}" )
     
     # extract and identify datafiles
@@ -67,27 +65,25 @@ def getKaggleSet( owner, dSetTitle, keyPath = None ):
 
 
 def getColTypes( _df, pr=False ):
-    
     """ if pr, outputs type's .__name__
-        else return dct(<colname:string>, <coltype:type>) """
+    else return dct(<colname:string>, <coltype:type>) """
     
-    colTypes = { c : 
+    cTypes = { c : 
         [ t for t in set( type(_df.iloc[n][c]) 
             for n in range(0, _df.shape[0] ) ) ] 
             for c in _df.columns }
     
-    if not pr: return colTypes
+    if not pr: return cTypes
     
-    for c, tLi in colTypes.items():
-        print( f"{c+':': <{max( [ len(str(t)) for t in colTypes.keys() ] )+2}}"
-            f"{[ t.__name__ for t in tLi ]}" )
+    for c, tLi in cTypes.items(): print( 
+        f"{c[:40]+':': <{max( [ len(str(t)) for t in cTypes.keys()])+2}}"
+        f"{[ t.__name__ for t in tLi ]}" )
 
 
 def wrapBulletValue( _val, room = 79, inset = None, bulletsize = 3 ):
     """ for bulleted item-value printing for bullet lists;
-        value is split on space closest to room-limit,
-        inset is applied to all lines after first line,
-        which is already inset by the bullet-item """
+    value is split at whitespace nearest-below room-limit,
+    values inset by longest item-name length """
     
     def getLine( _rmndr, _room ):
         # return if entire string fits in line
@@ -123,9 +119,7 @@ def wrapBulletValue( _val, room = 79, inset = None, bulletsize = 3 ):
 
 def write( inp = None, bullets = False, code = False, thinBreak = False,
     header = 0 ):
-    """ Parses some htmlbreak for markdown
-        Bullets require list of tuples
-    """
+    """ Parses some htmlbreak for markdown. Bullets require list of tuples """
     if (h := header) > 0: return display( HTML( f"<h{h}> {inp} </h{h}>" ) )
     elif thinBreak: return display(
         HTML( '<hr style="height:2px;background-color:gray">' ) )
@@ -166,5 +160,5 @@ def displayDF( _df, mask = None, rng = None, title = None, align = 'left',
 
 
 def tPrint( msg ):
-    write( [ (f"[{osOps.OsKit().dtStamp()}]", msg) ], bullets=True )
+    write( [ (f"[{ops.dtStamp()}]", msg) ], bullets=True )
 
